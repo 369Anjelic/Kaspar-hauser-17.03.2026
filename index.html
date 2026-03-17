@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐴 Kaspar Hauser</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #3987b8 0%, #2c5aa0 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            height: 90vh;
+            max-height: 900px;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            background: linear-gradient(135deg, #3987b8 0%, #2c5aa0 100%);
+            color: white;
+            padding: 40px 30px;
+            overflow-y: auto;
+            border-radius: 16px 0 0 16px;
+        }
+
+        .sidebar h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .sidebar p {
+            font-size: 14px;
+            opacity: 0.9;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+
+        .sidebar-section h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-section p {
+            font-size: 13px;
+            line-height: 1.6;
+            opacity: 0.95;
+            margin-bottom: 10px;
+        }
+
+        .quote {
+            font-size: 12px;
+            font-style: italic;
+            opacity: 0.8;
+            line-height: 1.6;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: #f4f5f5;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            display: flex;
+            animation: slideIn 0.3s ease-in;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.bot {
+            justify-content: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-text {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            word-wrap: break-word;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .message.bot .message-text {
+            background: white;
+            color: #3e4447;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        .message.user .message-text {
+            background: #3987b8;
+            color: white;
+            text-align: right;
+        }
+
+        .loading {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .loading-dot {
+            width: 8px;
+            height: 8px;
+            background: #3987b8;
+            border-radius: 50%;
+            animation: blink 1.4s infinite;
+        }
+
+        .loading-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .loading-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.5; }
+        }
+
+        .input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .input-area input:focus {
+            outline: none;
+            border-color: #3987b8;
+            box-shadow: 0 0 10px rgba(57, 135, 184, 0.3);
+        }
+
+        .input-area button {
+            padding: 12px 24px;
+            background: #3987b8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .input-area button:hover {
+            background: #2c5aa0;
+        }
+
+        .login-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .login-overlay.hidden {
+            display: none;
+        }
+
+        .login-form {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+        }
+
+        .login-form h2 {
+            color: #3987b8;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .login-form p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #3987b8;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(57, 135, 184, 0.3);
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 12px;
+            background: #3987b8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .login-form button:hover {
+            background: #2c5aa0;
+        }
+
+        .error {
+            color: #dc2626;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                height: 100vh;
+            }
+
+            .sidebar {
+                border-radius: 16px 16px 0 0;
+                padding: 20px;
+                max-height: 200px;
+            }
+
+            .message-text {
+                max-width: 85%;
+            }
+
+            .chat-area {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <h1>🐴 Kaspar Hauser</h1>
+            <p>Ein Dialog mit dem Geheimnis</p>
+
+            <div class="sidebar-section">
+                <h3>🔍 Gefunden</h3>
+                <p>26. Mai 1828 in Nürnberg</p>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>🐎 Sein Pferd</h3>
+                <p>Ein kleines Holzpferd. Sein einziger Freund in 16 Jahren Dunkelheit.</p>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>🌙 Seine Träume</h3>
+                <p>Lange Gänge mit hohen Fenstern. Eine schöne Frau. Männer in Rüstungen. Ein Wappen mit goldenen Löwen.</p>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>❓ Das Rätsel</h3>
+                <p>Wer war er wirklich? Seine Herkunft bleibt ungeklärt.</p>
+            </div>
+
+            <div class="quote">
+                "Mir hat jemand einen Stich gegeben! Ich kenne den Namen meines Vaters nicht!"<br>
+                — Letzte Worte, 1833
+            </div>
+
+            <div class="status">
+                <div class="status-dot"></div>
+                <span>Claude antwortet</span>
+            </div>
+        </div>
+
+        <!-- MAIN CHAT -->
+        <div class="main-content">
+            <div class="chat-area" id="chatArea">
+                <div class="message bot">
+                    <div class="message-text">
+                        Ich bin Kaspar Hauser. Ich weiß nicht genau, wer ich bin. Das ist die zentrale Frage meines Lebens. Aber ich bin hier. Was möchtest du wissen?
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <input type="text" id="messageInput" placeholder="Stelle deine Frage..." autocomplete="off">
+                <button onclick="sendMessage()">SENDEN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN OVERLAY -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-form">
+            <h2>🐴 Kaspar Hauser</h2>
+            <p>Ein Dialog mit dem Geheimnis</p>
+            <form onsubmit="login(event)">
+                <input type="password" id="passwordInput" placeholder="Passwort" required autofocus>
+                <button type="submit">BETRETEN</button>
+                <div class="error" id="errorMsg"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const PASSWORD = 'Kaspar123!';
+        let isLoggedIn = false;
+
+        function login(event) {
+            event.preventDefault();
+            const password = document.getElementById('passwordInput').value;
+            
+            if (password === PASSWORD) {
+                isLoggedIn = true;
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('messageInput').focus();
+            } else {
+                document.getElementById('errorMsg').textContent = 'Passwort falsch!';
+                document.getElementById('passwordInput').value = '';
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+
+            if (!message || !isLoggedIn) return;
+
+            // Add user message
+            const chatArea = document.getElementById('chatArea');
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user';
+            userMsg.innerHTML = `<div class="message-text">${escapeHtml(message)}</div>`;
+            chatArea.appendChild(userMsg);
+            chatArea.scrollTop = chatArea.scrollHeight;
+
+            input.value = '';
+
+            // Show loading
+            const loadingMsg = document.createElement('div');
+            loadingMsg.className = 'message bot';
+            loadingMsg.innerHTML = `<div class="message-text"><div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div></div>`;
+            chatArea.appendChild(loadingMsg);
+            chatArea.scrollTop = chatArea.scrollHeight;
+
+            // Send to backend
+            fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: message }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                chatArea.removeChild(loadingMsg);
+                const botMsg = document.createElement('div');
+                botMsg.className = 'message bot';
+                botMsg.innerHTML = `<div class="message-text">${escapeHtml(data.reply)}</div>`;
+                chatArea.appendChild(botMsg);
+                chatArea.scrollTop = chatArea.scrollHeight;
+            })
+            .catch(error => {
+                chatArea.removeChild(loadingMsg);
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'message bot';
+                errorMsg.innerHTML = `<div class="message-text">Es gab einen Fehler: ${escapeHtml(error.message)}</div>`;
+                chatArea.appendChild(errorMsg);
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Allow Enter to send
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && isLoggedIn) {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
