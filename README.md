@@ -30,10 +30,6 @@ npm start
 
 Öffne: http://localhost:3000
 
-## Login
-
-Passwort: `Kaspar123!`
-
 ## Geschichte
 
 Kaspar Hauser war eine mysteriöse Figur des 19. Jahrhunderts:
