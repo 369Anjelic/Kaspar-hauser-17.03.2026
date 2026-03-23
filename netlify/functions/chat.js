@@ -109,12 +109,40 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { message } = JSON.parse(event.body);
+    if (!event.body) {
+      return {
+        statusCode: 400,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+        body: JSON.stringify({ error: 'Request body is empty' })
+      };
+    }
+
+    let message;
+    try {
+      const parsed = JSON.parse(event.body);
+      message = parsed.message;
+    } catch (e) {
+      return {
+        statusCode: 400,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+        body: JSON.stringify({ error: 'Invalid JSON in request body' })
+      };
+    }
 
     if (!message) {
       return {
         statusCode: 400,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
         body: JSON.stringify({ error: 'Message is required' })
+      };
+    }
+
+    if (!process.env.ANTHROPIC_API_KEY) {
+      console.error('ANTHROPIC_API_KEY not set');
+      return {
+        statusCode: 500,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+        body: JSON.stringify({ error: 'Server configuration error: API key missing' })
       };
     }
 
@@ -143,7 +171,7 @@ exports.handler = async (event) => {
       body: JSON.stringify({ reply: assistantMessage })
     };
   } catch (error) {
-    console.error('Error:', error);
+    console.error('API Error:', error.message, error);
     return {
       statusCode: 500,
       headers: {
